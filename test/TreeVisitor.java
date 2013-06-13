@@ -4,12 +4,12 @@
 
 class TreeVisitor{
     public static void main(String[] a){
-	System.out.println(new TV().Start());
+	System.out..println(new TV().Start());
     }
 }
 
 class TV {
-
+    
     public int Start(){
 	Tree root ;
 	boolean ntb ;
