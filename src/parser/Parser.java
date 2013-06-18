@@ -1,21 +1,42 @@
 package parser;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.Stack;
+
 import lexer.Lexer;
 import lexer.Token;
 import lexer.Token.Kind;
 
 public class Parser
 {
-  Lexer lexer;
+  private static final ErrorType TYPE_SKIP = null;
+Lexer lexer;
   Token current;
   String filename;
+  BufferedReader tempfstream;
+  Stack<Token>  checkStack = new Stack<Token>();
+  Token TokenStack[] = new Token[2]; 
+  int stackNum=0;
+  int moveBack=0;
   
-
+  public enum ErrorType {
+      TYPE_UNEXPECT,
+      TYPE_AFTER,    
+      TYPE_SKIP;
+  }
   public Parser(String fname, java.io.InputStream fstream)
   {
     lexer = new Lexer(fname, fstream);
     filename = fname;
     current = lexer.nextToken();
+    
   }
 
   // /////////////////////////////////////////////
@@ -24,8 +45,28 @@ public class Parser
 
   private void advance()
   {
-    current = lexer.nextToken();
-    
+	if(checkStack.isEmpty())
+	{
+		current = lexer.nextToken();	
+		TokenStack[1] = TokenStack[0];
+		TokenStack[0] = current; 
+	}
+	else
+	{
+		current = checkStack.pop();
+	}
+		      
+  }
+  
+  private void moveBackAct()
+  {
+	  while(moveBack>0)
+	  {
+		   checkStack.push(current);
+		   current = TokenStack[1];
+		   TokenStack[1] = TokenStack[0];
+		   moveBack--;
+	  }
   }
 
   private void eatToken(Kind kind)
@@ -33,19 +74,58 @@ public class Parser
     if (kind == current.kind)
       advance();
     else {
-      System.out.print(filename+".c:"+current.lineNum+":"+current.column+": error: ");
+      System.out.print(filename+".c:"+current.TokenInfo.getLineNum()+":"+current.TokenInfo.getColumn()+": error: ");
       System.out.print("Expects: " + kind.toString());
-      System.out.println(" But got: " + current.kind.toString());
-      advance();
-      advance();
+      System.out.println(" But got: " + current.kind.toString());      
+      //error(ErrorType.TYPE_UNEXPECT, current, 1);
+      //advance();
       //System.exit(1);
     }
   }
 
   private void error()
   {
-    System.out.println("Syntax error: compilation aborting...\n");
-    System.exit(1);
+    //System.out.println("Syntax error: compilation aborting...\n");
+    while(current.kind != Kind.TOKEN_SEMI)
+    {
+        advance();
+    }
+    //System.exit(1);
+   
+    return;
+  }
+  
+  private void error(ErrorType type, Token TokenCur, int SkipNum , ArrayList<Kind> follow)
+  {
+	  switch(type)
+	  {
+		  case TYPE_UNEXPECT:	
+			   while( SkipNum-- > 0 )
+		       {
+		    	   advance();
+		       }
+			   break;
+		  case TYPE_AFTER:
+		       System.out.println("Unexpected symbol after " + TokenCur.toString());
+		       while( SkipNum-- > 0 )
+		       {
+		    	   advance();
+		       }
+		       break;
+		  case TYPE_SKIP:
+			  System.out.print(filename+".c:"+current.TokenInfo.getLineNum()+":"+current.TokenInfo.getColumn()+": error: ");
+		      //System.out.print("Expects: " + kind.toString());
+		      //System.out.println(" But got: " + current.kind.toString());  
+			  System.out.println("Unexpected symbol around \" " + TokenCur.KindToString() + " \"");
+			   while(!follow.contains(current.kind))
+			   {
+				   advance();
+			   }			 
+			   break;
+	      default:break;	  
+	  }
+    //System.out.println("Syntax error: compilation aborting...\n");
+    //System.exit(1);
     return;
   }
 
@@ -78,8 +158,12 @@ public class Parser
   // -> id
   // -> new int [exp]
   // -> new id ()
+  
+  ArrayList<Kind> AtomFollow = new ArrayList<Kind>(); 
   private void parseAtomExp()
   {
+	AtomFollow.add(Kind.TOKEN_RPAREN);
+	//AtomFollow.add(Kind.TOKEN_LBRACK);
     switch (current.kind) {
     case TOKEN_LPAREN:
       advance();
@@ -116,12 +200,12 @@ public class Parser
         eatToken(Kind.TOKEN_RPAREN);
         return;
       default:
-        error();
+        error(ErrorType.TYPE_AFTER, current, 3, null); //包括自己跳过3个
         return;
       }
     }
     default:
-      error();
+      error(ErrorType.TYPE_SKIP, current, 0, AtomFollow);
       return;
     }
   }
@@ -219,8 +303,15 @@ public class Parser
   // -> System.out.println ( Exp ) ;
   // -> id = Exp ;
   // -> id [ Exp ]= Exp ;
+  ArrayList<Kind> StateFollow = new ArrayList<Kind>(); 
   private void parseStatement()
   {
+	  StateFollow.add(Kind.TOKEN_RETURN);
+	  StateFollow.add(Kind.TOKEN_RBRACE);
+	  //StateFollow.add(Kind.TOKEN_SEMI);
+	  //StateFollow.add(Kind.TOKEN_WHILE);
+	  //StateFollow.add(Kind.TOKEN_SYSTEM);
+	  //StateFollow.add(Kind.TOKEN_ID);
     // Lab1. Exercise 4: Fill in the missing code
     // to parse a statement.
 	  switch (current.kind) {
@@ -277,25 +368,11 @@ public class Parser
 	      }
 	      else
 	      {
-	    	  error(); 
+	    	  error(ErrorType.TYPE_SKIP, current, 0, StateFollow);
 	      }
 	      return;
-	    case TOKEN_ASSIGN:	      
-	    	  advance();
-	    	  parseExp();
-	    	  //advance(); 
-	    	  eatToken(Kind.TOKEN_SEMI);
-	    	  return;
-	    case TOKEN_LBRACK:
-	    	  advance();
-	    	  parseExp();
-	    	  eatToken(Kind.TOKEN_RBRACK);
-	    	  eatToken(Kind.TOKEN_ASSIGN);
-	    	  parseExp();
-	    	  eatToken(Kind.TOKEN_SEMI);
-	    	  return;
 	    default:
-	      error();
+	      error(ErrorType.TYPE_SKIP, current, 0, StateFollow);
 	      return;
 	    }  
   }
@@ -307,7 +384,7 @@ public class Parser
     while (current.kind == Kind.TOKEN_LBRACE || current.kind == Kind.TOKEN_IF
         || current.kind == Kind.TOKEN_WHILE
         || current.kind == Kind.TOKEN_SYSTEM || current.kind == Kind.TOKEN_ID 
-        || current.kind == Kind.TOKEN_ASSIGN || current.kind == Kind.TOKEN_LBRACK) {//特俗处理= 和 [
+        ) {//特殊处理= 和 [
       parseStatement();
     }
     return;
@@ -382,6 +459,11 @@ public class Parser
 				advance(); 
 				eatToken(Kind.TOKEN_SEMI);
 			}
+			else
+			{
+				moveBack = 1;
+				return;
+			}
 			break;
 		default:
 			error();
@@ -399,6 +481,10 @@ public class Parser
     while (current.kind == Kind.TOKEN_INT || current.kind == Kind.TOKEN_BOOLEAN
     		|| current.kind == Kind.TOKEN_ID) {
       parseVarDecl();
+    }
+    if(moveBack > 0)
+    {
+    	moveBackAct();
     }
     return;
   }

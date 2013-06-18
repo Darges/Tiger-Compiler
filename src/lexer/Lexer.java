@@ -12,10 +12,12 @@ public class Lexer
   String fname; // the input file name to be compiled	
   InputStream fstream; // input stream for the above file
   String tempStr = "";
+  String lineInfo;
   boolean flag = false;
   public static int count=0;
   public static int linenum=1;
-  public Hashtable<String,Kind> table = 
+  
+  public static Hashtable<String,Kind> table = 
 	new Hashtable<String,Kind>();
   public Lexer(String fname, InputStream fstream)
   {
@@ -103,7 +105,8 @@ public class Lexer
       else
       {
     	  this.fstream.reset();
-    	  this.fstream.skip(count-1);
+    	  count--;
+    	  //this.fstream.skip(count-1);
     	  return null;
       }
     }
