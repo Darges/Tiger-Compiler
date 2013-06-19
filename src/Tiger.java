@@ -16,7 +16,9 @@ public class Tiger
   {
     InputStream fstream;
     Parser parser;
-
+    
+    
+    long a=System.currentTimeMillis();
     // ///////////////////////////////////////////////////////
     // handle command line arguments
     CommandLine cmd = new CommandLine();
@@ -49,11 +51,13 @@ public class Tiger
         while (token.kind != Kind.TOKEN_EOF) {
           System.out.println(token.toString());
           token = lexer.nextToken();
+          
         }
         fstream.close();
       } catch (Exception e) {
         e.printStackTrace();
       }
+     
       System.exit(1);
     }
 
@@ -67,7 +71,8 @@ public class Tiger
       parser = new Parser(fname, fstream);
 
       theAst = parser.parse();
-
+      System.out.println("\r<br>Ö´ÐÐºÄÊ± : "+(System.currentTimeMillis()-a)/1000f+" Ãë ");
+      
       fstream.close();
     } catch (Exception e) {
       e.printStackTrace();
@@ -83,7 +88,6 @@ public class Tiger
     // elaborate the AST, report all possible errors.
     elaborator.ElaboratorVisitor elab = new elaborator.ElaboratorVisitor();
     theAst.accept(elab);
-    
     return;
   }
 }

@@ -59,6 +59,7 @@ public class PrettyPrintVisitor implements Visitor
   @Override
   public void visit(ast.exp.Call e)
   {
+	  
     e.exp.accept(this);
     this.say("." + e.id + "(");
     for (ast.exp.T x : e.args) {

@@ -17,7 +17,7 @@ import lexer.Token.Kind;
 public class Parser
 {
   private static final ErrorType TYPE_SKIP = null;
-Lexer lexer;
+  Lexer lexer;
   Token current;
   String filename;
   BufferedReader tempfstream;
