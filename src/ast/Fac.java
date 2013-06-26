@@ -73,13 +73,13 @@ public class Fac
 		  new util.Flist<ast.method.T>().addAll(new ast.method.Method(
 				  new ast.type.Int(), 
 				  "doit",
-				  new util.Flist<ast.dec.T>().addAll(new ast.dec.Dec(new ast.type.Int(), "n")),
+				  new util.Flist<ast.dec.T>().addAll(new ast.dec.Dec(new ast.type.Boolean(), "n")),
 				  new util.Flist<ast.dec.T>().addAll(new ast.dec.Dec(new ast.type.Int(), "sum")
 				                                    ,new ast.dec.Dec(new ast.type.Int(), "i")),
 				  new util.Flist<ast.stm.T>().addAll(new ast.stm.Assign("i",new ast.exp.Num(0)),
 						                             new ast.stm.Assign("sum",new ast.exp.Num(0)),
-						                             new ast.stm.While(new ast.exp.Lt(new ast.exp.Id("i"),new ast.exp.Id("n")), 
-						                            		 new ast.stm.Assign("sum", new ast.exp.Add(new ast.exp.Id("sum"),new ast.exp.Id("i"))))),
+						                             new ast.stm.While(new ast.exp.Lt(new ast.exp.Id("i"),new ast.exp.True()), 
+						                            		 new util.Flist<ast.stm.T>().addAll(new ast.stm.Assign("sum", new ast.exp.Add(new ast.exp.Id("sum"),new ast.exp.Id("i")))))),
 						                             new ast.exp.Id("sum"))));
 				  
   public static ast.program.Program progsum = new ast.program.Program(sum,

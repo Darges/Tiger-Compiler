@@ -1,5 +1,7 @@
 package ast.exp;
 
+import lexer.Info;
+
 public class Call extends T
 {
   public T exp;
@@ -15,6 +17,15 @@ public class Call extends T
     this.id = id;
     this.args = args;
     this.type = null;
+  }
+  
+  public Call(T exp, String id, java.util.LinkedList<T> args, Info info)
+  {
+    this.exp = exp;
+    this.id = id;
+    this.args = args;
+    this.type = null;
+    this.pos = info;
   }
 
   @Override

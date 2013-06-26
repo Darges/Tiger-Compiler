@@ -1,5 +1,7 @@
 package ast.exp;
 
+import lexer.Info;
+
 public class Not extends T
 {
   public T exp;
@@ -7,6 +9,12 @@ public class Not extends T
   public Not(T exp)
   {
     this.exp = exp;
+  }
+  
+  public Not(T exp, Info info)
+  {
+    this.exp = exp;
+    this.pos = info;
   }
 
   @Override

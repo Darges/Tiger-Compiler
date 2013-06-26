@@ -10,8 +10,9 @@ public class ClassTable
   public ClassTable()
   {
     this.table = new java.util.Hashtable<String, ClassBinding>();
+   
   }
-
+  
   // Duplication is not allowed
   public void put(String c, ClassBinding cb)
   {
@@ -81,7 +82,8 @@ public class ClassTable
 
   public void dump()
   {
-    new Todo();
+	table.clear();
+    //new Todo();
   }
 
   @Override

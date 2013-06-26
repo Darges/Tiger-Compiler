@@ -14,8 +14,8 @@ public class Lexer
   String tempStr = "";
   String lineInfo;
   boolean flag = false;
-  public static int count=1;
-  public static int linenum=1;
+  public static int count = 1;
+  public static int linenum = 1;
   
   public static Hashtable<String,Kind> table = 
 	new Hashtable<String,Kind>();
@@ -54,8 +54,7 @@ public class Lexer
   {
 	
     int c = this.fstream.read();
-      
-
+    count++;  
     if (-1 == c)
       // The value for "lineNum" is now "null",<=50
       // you should modify this to an appropriate
@@ -67,7 +66,7 @@ public class Lexer
       if( '\n' == c )
       {
     	  linenum++;  //find a line break 
-    	  count = 1;
+    	  count = 2;
     	  flag = false;  //换行则注释处理结束
       }
       if( ' ' == c)
@@ -90,10 +89,10 @@ public class Lexer
       }
     }
     if (-1 == c)
-      return new Token(Kind.TOKEN_EOF, linenum, ++count); 
+      return new Token(Kind.TOKEN_EOF, linenum, count); 
       
     if ('+' == c)
-      return new Token(Kind.TOKEN_ADD, linenum, ++count);   
+      return new Token(Kind.TOKEN_ADD, linenum, count);   
     if ('&' == c)
     {
       this.fstream.mark(1);
@@ -112,61 +111,63 @@ public class Lexer
       }
     }
     if('='==c)
-      return new Token(Kind.TOKEN_ASSIGN, linenum, ++count);
+      return new Token(Kind.TOKEN_ASSIGN, linenum, count);
     if(','==c)
-      return new Token(Kind.TOKEN_COMMER, linenum, ++count);
+      return new Token(Kind.TOKEN_COMMER, linenum, count);
     if('.'==c)
-      return new Token(Kind.TOKEN_DOT, linenum, ++count);
+      return new Token(Kind.TOKEN_DOT, linenum, count);
     if('{'==c)
-      return new Token(Kind.TOKEN_LBRACE, linenum, ++count);
+      return new Token(Kind.TOKEN_LBRACE, linenum, count);
     if('['==c)
-      return new Token(Kind.TOKEN_LBRACK, linenum, ++count);     
+      return new Token(Kind.TOKEN_LBRACK, linenum, count);     
     if('('==c)
-      return new Token(Kind.TOKEN_LPAREN, linenum, ++count);    
+      return new Token(Kind.TOKEN_LPAREN, linenum, count);    
     if('<'==c)
-      return new Token(Kind.TOKEN_LT, linenum, ++count);   
+      return new Token(Kind.TOKEN_LT, linenum, count);   
     if('!'==c)
-      return new Token(Kind.TOKEN_NOT, linenum, ++count); 
+      return new Token(Kind.TOKEN_NOT, linenum, count); 
     if('}'==c)
-        return new Token(Kind.TOKEN_RBRACE, linenum, ++count);  
+        return new Token(Kind.TOKEN_RBRACE, linenum, count);  
     if(']'==c)
-        return new Token(Kind.TOKEN_RBRACK, linenum, ++count);  
+        return new Token(Kind.TOKEN_RBRACK, linenum, count);  
     if(')'==c)
-        return new Token(Kind.TOKEN_RPAREN, linenum, ++count);  
+        return new Token(Kind.TOKEN_RPAREN, linenum, count);  
     if(';'==c)
-        return new Token(Kind.TOKEN_SEMI, linenum, ++count);  
+        return new Token(Kind.TOKEN_SEMI, linenum, count);  
     if('-'==c)
-        return new Token(Kind.TOKEN_SUB, linenum, ++count); 
+        return new Token(Kind.TOKEN_SUB, linenum, count); 
     if('*'==c)
-        return new Token(Kind.TOKEN_TIMES, linenum, ++count);  
+        return new Token(Kind.TOKEN_TIMES, linenum, count);  
     
     // IntegerLiteral
     if(c>='0'&&c<='9')
     {
+      int tempNum=0;
       //tempStr;
     	tempStr="";
       tempStr+=c;
+      tempNum = c - '0';
       this.fstream.mark(1);
 	  c = this.fstream.read();
 	  count++;
       while(c>='0'&&c<='9')
-      {    	
+      {    	    	  
+    	  tempStr+=c;
+    	  tempNum = tempNum*10 + c - '0';
     	  this.fstream.mark(1);
     	  c = this.fstream.read();
     	  count++;
-    	  tempStr+=c;
       }
       this.fstream.reset();
       count--;
 	  //this.fstream.skip(1); 	  
-	  return new Token(Kind.TOKEN_NUM, linenum, tempStr, count);
+	  return new Token(Kind.TOKEN_NUM, linenum, String.valueOf(tempNum), count);
     } 	
     
     if((c>='a'&&c<='z')||(c>='A'&&c<='Z')||(c=='_'))
     {
       //tempStr=null;
       tempStr="";
-      count++;
       do{
     	  tempStr+=(char)c;
           this.fstream.mark(1);
@@ -176,7 +177,6 @@ public class Lexer
       
       this.fstream.reset();
       count--;
-
   	  //this.fstream.skip(1); 
   	  Token.Kind tempkind = table.get(tempStr);
   	  if(null!=tempkind)
