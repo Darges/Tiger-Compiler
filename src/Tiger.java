@@ -29,7 +29,7 @@ public class Tiger
     if (control.Control.testFac) {
       System.out.println("Testing the Tiger compiler on Fac.java starting:");
       ast.PrettyPrintVisitor pp = new ast.PrettyPrintVisitor();
-      ast.Fac.prog.accept(pp);
+      ast.Fac.progsum.accept(pp);
       System.out.println("Testing the Tiger compiler on Fac.java finished.");
       System.exit(1);
     }
@@ -71,7 +71,7 @@ public class Tiger
       parser = new Parser(fname, fstream);
 
       theAst = parser.parse();
-      System.out.println("\r<br>执行耗时 : "+(System.currentTimeMillis()-a)/1000f+" 秒 ");
+     
       
       fstream.close();
     } catch (Exception e) {
@@ -88,6 +88,7 @@ public class Tiger
     // elaborate the AST, report all possible errors.
     elaborator.ElaboratorVisitor elab = new elaborator.ElaboratorVisitor();
     theAst.accept(elab);
+    System.out.println("\r执行耗时 : "+(System.currentTimeMillis()-a)/1000f+" 秒 ");
     return;
   }
 }

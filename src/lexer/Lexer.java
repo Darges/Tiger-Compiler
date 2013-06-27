@@ -14,8 +14,8 @@ public class Lexer
   String tempStr = "";
   String lineInfo;
   boolean flag = false;
-  public static int count=0;
-  public static int linenum=1;
+  public static int count = 1;
+  public static int linenum = 1;
   
   public static Hashtable<String,Kind> table = 
 	new Hashtable<String,Kind>();
@@ -66,7 +66,7 @@ public class Lexer
       if( '\n' == c )
       {
     	  linenum++;  //find a line break 
-    	  count = 0;
+    	  count = 2;
     	  flag = false;  //换行则注释处理结束
       }
       if( ' ' == c)
@@ -78,7 +78,7 @@ public class Lexer
     	  count += 4; // length of \t
       }
       c = this.fstream.read();
-      count++;
+      //count++;
       if( '/' == c)  //用于注释处理
       {
     	  flag = true; 
@@ -142,23 +142,26 @@ public class Lexer
     // IntegerLiteral
     if(c>='0'&&c<='9')
     {
+      int tempNum=0;
       //tempStr;
     	tempStr="";
       tempStr+=c;
+      tempNum = c - '0';
       this.fstream.mark(1);
 	  c = this.fstream.read();
 	  count++;
       while(c>='0'&&c<='9')
-      {    	
+      {    	    	  
+    	  tempStr+=c;
+    	  tempNum = tempNum*10 + c - '0';
     	  this.fstream.mark(1);
     	  c = this.fstream.read();
     	  count++;
-    	  tempStr+=c;
       }
       this.fstream.reset();
       count--;
 	  //this.fstream.skip(1); 	  
-	  return new Token(Kind.TOKEN_NUM, linenum, tempStr, count);
+	  return new Token(Kind.TOKEN_NUM, linenum, String.valueOf(tempNum), count);
     } 	
     
     if((c>='a'&&c<='z')||(c>='A'&&c<='Z')||(c=='_'))

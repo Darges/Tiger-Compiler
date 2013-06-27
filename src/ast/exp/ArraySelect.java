@@ -1,5 +1,7 @@
 package ast.exp;
 
+import lexer.Info;
+
 public class ArraySelect extends T
 {
   public T array;
@@ -9,6 +11,13 @@ public class ArraySelect extends T
   {
     this.array = array;
     this.index = index;
+  }
+  
+  public ArraySelect(T array, T index, Info info)
+  {
+    this.array = array;
+    this.index = index;
+    this.pos = info;
   }
 
   @Override

@@ -1,5 +1,7 @@
 package ast.exp;
 
+import lexer.Info;
+
 public class Add extends T
 {
   public T left;
@@ -9,6 +11,13 @@ public class Add extends T
   {
     this.left = left;
     this.right = right;
+  }
+  
+  public Add(T left, T right, Info info)
+  {
+    this.left = left;
+    this.right = right;
+    this.pos = info;
   }
 
   @Override

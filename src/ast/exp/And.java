@@ -1,5 +1,7 @@
 package ast.exp;
 
+import lexer.Info;
+
 public class And extends T
 {
   public T left;
@@ -11,6 +13,13 @@ public class And extends T
     this.right = right;
   }
 
+  public And(T left, T right, Info info)
+  {
+    this.left = left;
+    this.right = right;
+    this.pos = info;
+  }
+  
   @Override
   public void accept(ast.Visitor v)
   {

@@ -108,7 +108,16 @@ public class Token
 	this.TokenInfo = TokenInfo;    
   }
 
-  @Override
+  public Token(Token current) {
+	this.kind = current.kind;
+	this.lexeme = current.lexeme;
+	this.lineNum = current.lineNum;
+	this.column = current.column;
+	TokenInfo = new Info(lineNum, column, null);
+	// TODO Auto-generated constructor stub
+  }
+
+@Override
   public String toString()
   {
     String s;
@@ -122,6 +131,8 @@ public class Token
     return this.kind.toString() + s;
   }
   
+
+
   public String KindToString()
   {
 	  String s;
