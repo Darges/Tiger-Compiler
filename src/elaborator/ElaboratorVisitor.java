@@ -104,20 +104,20 @@ public class ElaboratorVisitor implements ast.Visitor
         ;
       else
       {
-    	  ClassBinding temp = classTable.get(argsty.get(i).toString());
-    	  ClassBinding prev = null;
-    	  
-    	  while( (temp.extendss!=null) && !dec.type.toString().equals(temp) )// 查找其基类
-    	  {
-    		  prev = temp;
-    		  temp = classTable.get(temp.extendss);
-    	  }	  
-    	  
-    	  if(!dec.type.toString().equals(prev.extendss))
-    	  {    		  
-    		  error(dec.type.toString()+" and argsType "+argsty.get(i).toString()+" type mismatch", e.pos);
-    		  //classTable.get(argsty.get(i).toString()).
-    	  }    	 
+//    	  ClassBinding temp = classTable.get(argsty.get(i).toString());
+//    	  ClassBinding prev = null;
+//    	  
+//    	  while( (temp.extendss!=null) && !dec.type.toString().equals(temp) )// 查找其基类
+//    	  {
+//    		  prev = temp;
+//    		  temp = classTable.get(temp.extendss);
+//    	  }	  
+//    	  
+//    	  if(!dec.type.toString().equals(prev.extendss))
+//    	  {    		  
+//    		  error(dec.type.toString()+" and argsType "+argsty.get(i).toString()+" type mismatch", e.pos);
+//    		  //classTable.get(argsty.get(i).toString()).
+//    	  }    	 
       }
        
     }
@@ -181,8 +181,7 @@ public class ElaboratorVisitor implements ast.Visitor
   @Override
   public void visit(ast.exp.NewIntArray e)
   {
-	  //lab modify
-	 
+	  //lab modify	 
 	  e.exp.accept(this);  
 	  this.type = new ast.type.IntArray();	  
 	  return;
@@ -401,8 +400,7 @@ public class ElaboratorVisitor implements ast.Visitor
     if(!parameters.isEmpty())
     {
     	Iterator<String> i = parameters.iterator();//先迭代出来  
-	    while(i.hasNext()){//遍历  
-	    	
+	    while(i.hasNext()){//遍历  	    	
 	        System.out.println("Warning: "+i.next()+" have not been assigned value");  
 	    }  
     }

@@ -31,9 +31,9 @@ public class Fac
           new ast.exp.NewObject("Fac"), "ComputeFac",
           new util.Flist<ast.exp.T>().addAll(new ast.exp.Num(10)))));
 
-  // // class "Fac"
-  static ast.classs.Class fac = new ast.classs.Class("Fac",
-		  null,
+//class "Fac"
+//<<<<<<< HEAD
+  static ast.classs.Class fac = new ast.classs.Class("Fac", null,
       new util.Flist<ast.dec.T>().addAll(),
       new util.Flist<ast.method.T>().addAll(new ast.method.Method(
           new ast.type.Int(), "ComputeFac", new util.Flist<ast.dec.T>()
@@ -67,6 +67,7 @@ public class Fac
 	      "Sum", "a", new ast.stm.Print(new ast.exp.Call(
 	          new ast.exp.NewObject("Doit"), "doit",
 	          new util.Flist<ast.exp.T>().addAll(new ast.exp.Num(101)))));
+  
   static ast.classs.Class doit = new ast.classs.Class("Doit",
 		  null,
 		  new util.Flist<ast.dec.T>().addAll(),

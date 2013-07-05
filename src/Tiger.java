@@ -7,6 +7,7 @@ import lexer.Token;
 import lexer.Token.Kind;
 
 import control.CommandLine;
+import control.Control;
 
 import parser.Parser;
 
@@ -29,7 +30,29 @@ public class Tiger
     if (control.Control.testFac) {
       System.out.println("Testing the Tiger compiler on Fac.java starting:");
       ast.PrettyPrintVisitor pp = new ast.PrettyPrintVisitor();
+//<<<<<<< HEAD
       ast.Fac.progsum.accept(pp);
+//=======
+      ast.Fac.prog.accept(pp);
+
+      // elaborate the given program, this step is necessary
+      // for that it will annotate the AST with some
+      // informations used by later phase.
+      elaborator.ElaboratorVisitor elab = new elaborator.ElaboratorVisitor();
+      ast.Fac.prog.accept(elab);
+
+      // Compile this program to C.
+      System.out.println("Translate the program to C");
+      codegen.C.TranslateVisitor trans2C = new codegen.C.TranslateVisitor();
+      // pass this visitor to the "Fac.java" program.
+      ast.Fac.progsum.accept(trans2C);
+      // this visitor will return an AST for C.
+      codegen.C.program.T cast = trans2C.program;
+      // output the AST for C.
+      codegen.C.PrettyPrintVisitor ppc = new codegen.C.PrettyPrintVisitor();
+      cast.accept(ppc);
+
+//>>>>>>> refs/remotes/origin/Lab3
       System.out.println("Testing the Tiger compiler on Fac.java finished.");
       System.exit(1);
     }
@@ -38,6 +61,7 @@ public class Tiger
       cmd.usage();
       return;
     }
+    Control.fileName = fname;
 
     // /////////////////////////////////////////////////////
     // it would be helpful to be able to test the lexer
@@ -78,17 +102,49 @@ public class Tiger
       e.printStackTrace();
       System.exit(1);
     }
-    
+
     // pretty printing the AST, if necessary
     if (control.Control.dumpAst) {
       ast.PrettyPrintVisitor pp = new ast.PrettyPrintVisitor();
       theAst.accept(pp);
     }
-    
+
     // elaborate the AST, report all possible errors.
     elaborator.ElaboratorVisitor elab = new elaborator.ElaboratorVisitor();
     theAst.accept(elab);
+//<<<<<<< HEAD
     System.out.println("\rÖ´ÐÐºÄÊ± : "+(System.currentTimeMillis()-a)/1000f+" Ãë ");
+//=======
+
+    // code generation
+    switch (control.Control.codegen) {
+    case Bytecode:
+      codegen.bytecode.TranslateVisitor trans = new codegen.bytecode.TranslateVisitor();
+      theAst.accept(trans);
+      codegen.bytecode.program.T bytecodeAst = trans.program;
+      codegen.bytecode.PrettyPrintVisitor ppbc = new codegen.bytecode.PrettyPrintVisitor();
+      bytecodeAst.accept(ppbc);
+      break;
+    case C:
+      codegen.C.TranslateVisitor transC = new codegen.C.TranslateVisitor();
+      theAst.accept(transC);
+      codegen.C.program.T cAst = transC.program;
+      codegen.C.PrettyPrintVisitor ppc = new codegen.C.PrettyPrintVisitor();
+      cAst.accept(ppc);
+      break;
+    case X86:
+      // similar
+      break;
+    default:
+      break;
+    }
+    
+    // Lab3, exercise 6: add some glue code to
+    // call gcc to compile the generated C or x86
+    // file, or call java to run the bytecode file.
+    // Your code:
+
+//>>>>>>> refs/remotes/origin/Lab3
     return;
   }
 }
